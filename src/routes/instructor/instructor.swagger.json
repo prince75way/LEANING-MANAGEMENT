@@ -1,0 +1,125 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Instructor Onboarding API",
+      "description": "API to onboard a new instructor to the platform."
+    },
+    "tag":["Instructor"],
+    "host": "localhost:8000",
+   
+    "schemes": ["http"],
+    "paths": {
+      "/instructor/onboard": {
+        "post": {
+          "summary": "Onboard a new instructor",
+          "description": "This endpoint allows the registration of a new instructor. It takes instructor details like name, email, password, qualifications, and experience.",
+          "parameters": [
+            {
+              "name": "name",
+              "in": "formData",
+              "description": "Name of the instructor",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "email",
+              "in": "formData",
+              "description": "Email of the instructor (unique)",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "password",
+              "in": "formData",
+              "description": "Password for the instructor",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "qualifications",
+              "in": "formData",
+              "description": "Qualifications of the instructor",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "experience",
+              "in": "formData",
+              "description": "Experience of the instructor",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Instructor onboarded successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "instructor": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "email": {
+                        "type": "string"
+                      },
+                      "qualifications": {
+                        "type": "string"
+                      },
+                      "experience": {
+                        "type": "string"
+                      },
+                      "role": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request, missing required fields or invalid data"
+            },
+            "409": {
+              "description": "Conflict, instructor with the same email already exists"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Instructor": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "qualifications": {
+            "type": "string"
+          },
+          "experience": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+  
