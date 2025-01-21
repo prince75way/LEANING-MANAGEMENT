@@ -5,57 +5,46 @@
     "title": "Course API",
     "description": "APIs for creating and enrolling in courses."
   },
-  "tag": ["Course"],
+  "tags": [
+    {
+      "name": "Course",
+      "description": "Course related operations"
+    }
+  ],
   "host": "localhost:8000",
   "schemes": ["http"],
   "paths": {
-    "/course/create": {
+    "/course": {
+      "get": {
+        "summary": "Get all courses",
+        "description": "This endpoint retrieves all available courses.",
+        "responses": {
+          "200": {
+            "description": "A list of courses",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Course"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      },
       "post": {
         "summary": "Create a new course",
         "description": "This endpoint allows the creation of a new course. The course requires a title, description, price, and associated instructor.",
         "parameters": [
           {
-            "name": "title",
-            "in": "formData",
-            "description": "Title of the course",
+            "name": "course",
+            "in": "body",
+            "description": "Course details for creating a new course",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "in": "formData",
-            "description": "Description of the course",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "price",
-            "in": "formData",
-            "description": "Price of the course",
-            "required": true,
-            "type": "number"
-          },
-          {
-            "name": "instructorId",
-            "in": "formData",
-            "description": "ID of the instructor creating the course",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "category",
-            "in": "formData",
-            "description": "Category of the course (optional)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "image",
-            "in": "formData",
-            "description": "Image representing the course (optional)",
-            "required": false,
-            "type": "string",
-            "format": "binary"
+            "schema": {
+              "$ref": "#/definitions/Course"
+            }
           }
         ],
         "responses": {
@@ -68,27 +57,7 @@
                   "type": "string"
                 },
                 "course": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "price": {
-                      "type": "number"
-                    },
-                    "instructorId": {
-                      "type": "string"
-                    },
-                    "category": {
-                      "type": "string"
-                    },
-                    "image": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/definitions/Course"
                 }
               }
             }
@@ -132,15 +101,7 @@
                   "type": "string"
                 },
                 "enrollmentDetails": {
-                  "type": "object",
-                  "properties": {
-                    "userId": {
-                      "type": "string"
-                    },
-                    "courseId": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/definitions/Enrollment"
                 }
               }
             }
@@ -157,7 +118,7 @@
         }
       }
     },
-    "/course/edit/{courseId}": {
+    "/course/{courseId}": {
       "put": {
         "summary": "Edit an existing course",
         "description": "This endpoint allows an instructor to edit an existing course by providing the course ID and updated course details.",
@@ -170,40 +131,13 @@
             "type": "string"
           },
           {
-            "name": "title",
-            "in": "formData",
-            "description": "Updated title of the course",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "description",
-            "in": "formData",
-            "description": "Updated description of the course",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "price",
-            "in": "formData",
-            "description": "Updated price of the course",
-            "required": false,
-            "type": "number"
-          },
-          {
-            "name": "category",
-            "in": "formData",
-            "description": "Updated category of the course (optional)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "image",
-            "in": "formData",
-            "description": "Updated image representing the course (optional)",
-            "required": false,
-            "type": "string",
-            "format": "binary"
+            "name": "course",
+            "in": "body",
+            "description": "Updated course details",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Course"
+            }
           }
         ],
         "responses": {
@@ -216,27 +150,7 @@
                   "type": "string"
                 },
                 "course": {
-                  "type": "object",
-                  "properties": {
-                    "title": {
-                      "type": "string"
-                    },
-                    "description": {
-                      "type": "string"
-                    },
-                    "price": {
-                      "type": "number"
-                    },
-                    "instructorId": {
-                      "type": "string"
-                    },
-                    "category": {
-                      "type": "string"
-                    },
-                    "image": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/definitions/Course"
                 }
               }
             }
@@ -251,9 +165,7 @@
             "description": "Internal server error"
           }
         }
-      }
-    },
-    "/course/delete/{courseId}": {
+      },
       "delete": {
         "summary": "Delete a course",
         "description": "This endpoint allows an instructor to delete an existing course by providing the course ID.",
@@ -313,7 +225,8 @@
         "image": {
           "type": "string"
         }
-      }
+      },
+      "required": ["title", "description", "price", "instructorId"]
     },
     "Enrollment": {
       "type": "object",

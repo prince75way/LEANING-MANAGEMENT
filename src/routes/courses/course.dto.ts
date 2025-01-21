@@ -3,11 +3,11 @@ import { BaseSchema } from "../../common/dto/base.dto";
 export interface CourseDTO extends BaseSchema {
     title: string;
     description: string;
-    instructor: Object;  // Reference to the instructor's ID
+    instructor: Object;  
     price: number;
-    modules: string[];  // Array of module IDs that belong to this course
-    category: string;   // e.g., Programming, Design
+    modules: string[]; 
+    category: string;   
     image?: string;
-    enrolledStudents:string[]     // Optional image field for the course
+    enrolledStudents:string[]     
   }
   

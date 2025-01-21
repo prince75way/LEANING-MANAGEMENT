@@ -10,8 +10,10 @@ const router = express.Router();
 router.post('/create/:courseId', validation.validateModuleCreation,upload.single('video'), controller.createModule);
 
 router.delete('/:moduleId', controller.deleteModule);
-// Route for editing a module
-router.put('/edit/:moduleId', validation.validateModuleEdit, upload.single('video'), controller.editModule);
 
+// Route for editing a module
+router.put('/:moduleId', validation.validateModuleEdit, upload.single('video'), controller.editModule);
+
+router.get('/:courseId', controller.getModulesByCourse);
 
 export default router;

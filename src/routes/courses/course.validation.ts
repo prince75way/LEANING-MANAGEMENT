@@ -1,7 +1,7 @@
-// course.validation.ts
+
 import { body } from 'express-validator';
 
-// Validation rules for course creation
+
 export const validateCourseCreation = [
   body('title').notEmpty().withMessage('Title is required'),
   body('description').notEmpty().withMessage('Description is required'),
