@@ -31,8 +31,8 @@ This is the backend for a Learning Management System (LMS), where instructors ca
 - **POST** `/api/user/refresh-token`: Refresh access tokens for a logged-in user.
 
 ### Courses
-
-- **POST** `/api/course/create`: Create a new course (Instructor only).
+- **GET** `/api/course`: Get the Courses (Instructor only).
+- **POST** `/api/course`: Create a new course (Instructor only).
 - **POST** `/api/course/enroll`: Enroll a student in a course.
 - **PUT** `/api/course/edit/:courseId`: Edit course details (Instructor only).
 - **DELETE** `/api/course/delete/:courseId`: Delete a course (Instructor only).
@@ -40,8 +40,8 @@ This is the backend for a Learning Management System (LMS), where instructors ca
 ### Modules
 
 - **POST** `/api/module/create/:courseId`: Create a new module for a course (Instructor only).
-- **PUT** `/api/module/edit/:moduleId`: Edit a module (Instructor only).
-- **DELETE** `/api/module/delete/:moduleId`: Delete a module (Instructor only).
+- **PUT** `/api/module/:moduleId`: Edit a module (Instructor only).
+- **DELETE** `/api/module/:moduleId`: Delete a module (Instructor only).
 
 ### Progress Tracking
 
