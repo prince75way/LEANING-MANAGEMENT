@@ -5,6 +5,7 @@ import routes from './routes'
 import dotenv from 'dotenv'
 import bodyParser = require("body-parser");
 import { setupSwagger } from './swagger';
+import { apiRateLimiter } from './rateLImiter';
 connectToMongo();
 //to load the evn variables from .env file
 
@@ -15,6 +16,7 @@ const app: Express= express();
 
 
 setupSwagger(app);
+app.use(apiRateLimiter)
 app.use(express.json())
 app.use(bodyParser.json())
 

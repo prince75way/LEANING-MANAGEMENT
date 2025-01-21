@@ -1,150 +1,136 @@
 import { Request, Response } from 'express';
-import { createModuleService } from './modules.services';  // Service to handle the business logic
-import { uploadVideoToCloudinary } from './cloudinary'; // Helper to upload video to Cloudinary
-import { validateToken } from '../../utils/validate.token'; // Helper to validate token and extract user info
-import { sendResponse } from '../../utils/response.helper'; // Response helper
+import asyncHandler from 'express-async-handler';
+import { createModuleService, deleteModuleService, editModuleService, addModuleToCourseService } from './modules.services';
+import { uploadVideoToCloudinary } from './cloudinary';
+import { validateToken } from '../../utils/validate.token';
+import { sendResponse } from '../../utils/response.helper';
 import { Instructor } from '../instructor/instructor.schema';
-import Module from './modules.schema';
 import Course from '../courses/course.schema';
+import Module from './modules.schema';
+/**
+ * Controller to create a new module.
+ * 
+ * @async
+ * @function createModule
+ * @param {Request} req - The request object containing the module data and courseId.
+ * @param {Response} res - The response object used to send the response.
+ * 
+ * @returns {Promise<void>} Sends a success or error response.
+ */
+export const createModule = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return sendResponse(res, 401, false, 'Authorization token is required');
+  }
 
-export const createModule = async (req: Request, res: Response): Promise<void> => {
-  try {
-    // Validate JWT token to ensure the user is an instructor
-    const token = req.headers.authorization?.split(' ')[1];  // Extract token from Authorization header
-    if (!token) {
-      return sendResponse(res, 401, false, 'Authorization token is required');
-    }
+  await validateToken(token);
+  const instructor = await Instructor.findOne({ refreshToken: token });
+  if (!instructor) {
+    return sendResponse(res, 403, false, 'Access denied. Only instructors can add modules.');
+  }
 
-    const decodedToken = await validateToken(token);
+  const { title, description, contentText } = req.body;
+  const { courseId } = req.params;
+  const video = req.file;
 
-    const instructor=await Instructor.findOne({refreshToken:token})
-    // console.log("Inststructor is: ",instructor)
-    if (!instructor) {
-      return sendResponse(res, 403, false, 'Access denied. Only instructors can add modules.');
-    }
+  if (!video) {
+    return sendResponse(res, 400, false, 'Video file is required');
+  }
 
-    // Destructure data from the request body
-    const { title, description, contentText } = req.body;
-    const { courseId } = req.params;
-    const video = req.file;  // The video file uploaded via multipart form-data
-    // console.log("Vide is: ",video);
-    // console.log("req.body is: ",req.body,title,description,contentText,courseId);
-    // Check if video file is provided
-    if (!video) {
-      return sendResponse(res, 400, false, 'Video file is required');
-    }
+  const cloudinaryVideoUrl = await uploadVideoToCloudinary(video);
+  const moduleData = { title, description, contentText, videoUrl: cloudinaryVideoUrl, courseId };
+  
+  const newModule = await createModuleService(moduleData) as { _id: string };
+  
+  await addModuleToCourseService(courseId, newModule._id.toString());
 
-    // Upload video to Cloudinary and get the video URL
+  return sendResponse(res, 201, true, 'Module created successfully', newModule);
+});
+
+/**
+ * Controller to delete a module.
+ * 
+ * @async
+ * @function deleteModule
+ * @param {Request} req - The request object containing the moduleId.
+ * @param {Response} res - The response object used to send the response.
+ * 
+ * @returns {Promise<void>} Sends a success or error response.
+ */
+export const deleteModule = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { moduleId } = req.params;
+  
+  await deleteModuleService(moduleId);
+
+  await Course.updateMany({ modules: moduleId }, { $pull: { modules: moduleId } });
+
+  return sendResponse(res, 200, true, 'Module deleted successfully');
+});
+
+/**
+ * Controller to edit a module.
+ * 
+ * @async
+ * @function editModule
+ * @param {Request} req - The request object containing the module data and moduleId.
+ * @param {Response} res - The response object used to send the response.
+ * 
+ * @returns {Promise<void>} Sends a success or error response.
+ */
+export const editModule = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) {
+    return sendResponse(res, 401, false, 'Authorization token is required');
+  }
+
+  await validateToken(token);
+  const instructor = await Instructor.findOne({ refreshToken: token });
+  if (!instructor) {
+    return sendResponse(res, 403, false, 'Access denied. Only instructors can edit modules.');
+  }
+
+  const { moduleId } = req.params;
+  const { title, description, contentText } = req.body;
+  const video = req.file;
+
+  const updateData: Partial<{ title: string, description: string, contentText: string, videoUrl: string }> = {
+    title, description, contentText,
+  };
+
+  if (video) {
     const cloudinaryVideoUrl = await uploadVideoToCloudinary(video);
-
-    // Prepare module data
-    const moduleData = {
-      title,
-      description,
-      contentText,
-      videoUrl: cloudinaryVideoUrl,  // Cloudinary URL for the video
-      courseId,
-    };
-
-    // Call the service to create a module
-    const newModule = await createModuleService(moduleData) as { _id: string };
-
-    // Adding the module to the course
-
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return sendResponse(res, 404, false, 'Course not found');
-    }
-    course.modules.push(newModule._id.toString());
-    await course.save();
-
-    // Send a success response with the created module data
-    return sendResponse(res, 201, true, 'Module created successfully', newModule);
-  } catch (error: any) {
-    // Handle any errors that occur during module creation
-    console.error(error);
-    return sendResponse(res, 500, false, 'Error creating module', error.message);
+    updateData.videoUrl = cloudinaryVideoUrl;
   }
-};
+
+  const updatedModule = await editModuleService(moduleId, updateData);
+
+  return sendResponse(res, 200, true, 'Module updated successfully', updatedModule);
+});
 
 
 
 
-// DELETE MODULE CODE
 
-// Controller to delete a module
-export const deleteModule = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const { moduleId } = req.params;  // Extract moduleId from the request params
+/**
+ * Retrieves modules for a specific course.
+ * 
+ * @async
+ * @function getModulesByCourse
+ * @param {Request} req - The request object containing the courseId in the params.
+ * @param {Response} res - The response object used to send the retrieved modules.
+ * 
+ * @returns {Promise<void>} Sends a response with the list of modules or an error message if not found.
+ */
+export const getModulesByCourse = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  const { courseId } = req.params;
 
-    // Find and delete the module
-    const module = await Module.findByIdAndDelete(moduleId);
-    
-    if (!module) {
-      return sendResponse(res, 404, false, 'Module not found');
-    }
+  // Find modules by courseId
+  const modules = await Module.find({ courseId });
 
-    // Optionally, remove the module reference from the course
-    await Course.updateMany(
-      { modules: moduleId },
-      { $pull: { modules: moduleId } }
-    );
-
-    // Send success response
-    return sendResponse(res, 200, true, 'Module deleted successfully');
-  } catch (error: any) {
-    console.error(error);
-    return sendResponse(res, 500, false, 'Error deleting module', error.message);
+  if (!modules || modules.length === 0) {
+    res.status(404).json({ message: 'No modules found for this course' });
+  } else {
+    res.status(200).json(modules);
   }
-};
+});
 
-
-
-// Controller to edit a module
-export const editModule = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];  // Extract token from Authorization header
-    if (!token) {
-      return sendResponse(res, 401, false, 'Authorization token is required');
-    }
-
-    const decodedToken = await validateToken(token);
-
-    const instructor=await Instructor.findOne({refreshToken:token})
-    // console.log("Inststructor is: ",instructor)
-    if (!instructor) {
-      return sendResponse(res, 403, false, 'Access denied. Only instructors can add modules.');
-    }
-
-    const { moduleId } = req.params;  // Extract moduleId from the request params
-    const { title, description, contentText } = req.body;  // Extract data from the request body
-    const video = req.file;  // Extract video file (if provided)
-
-    // Find the module to be updated
-    const module = await Module.findById(moduleId);
-    
-    if (!module) {
-      return sendResponse(res, 404, false, 'Module not found');
-    }
-
-    // Update module details
-    module.title = title || module.title;
-    module.description = description || module.description;
-    module.contentText = contentText || module.contentText;
-
-    // If a new video is uploaded, upload it to Cloudinary and update the video URL
-    if (video) {
-      const cloudinaryVideoUrl = await uploadVideoToCloudinary(video);
-      module.videoUrl = cloudinaryVideoUrl;
-    }
-
-    // Save the updated module
-    await module.save();
-
-    // Send success response
-    return sendResponse(res, 200, true, 'Module updated successfully', module);
-  } catch (error: any) {
-    console.error(error);
-    return sendResponse(res, 500, false, 'Error updating module', error.message);
-  }
-};

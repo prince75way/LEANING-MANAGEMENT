@@ -28,7 +28,8 @@ This is the backend for a Learning Management System (LMS), where instructors ca
 
 - **POST** `/api/user/signup`: Register a new user (Student/Instructor).
 - **POST** `/api/user/login`: Login an existing user (Student/Instructor).
-  
+- **POST** `/api/user/refresh-token`: Refresh access tokens for a logged-in user.
+
 ### Courses
 
 - **POST** `/api/course/create`: Create a new course (Instructor only).
@@ -44,8 +45,12 @@ This is the backend for a Learning Management System (LMS), where instructors ca
 
 ### Progress Tracking
 
-- **POST** `/api/user/watchedmodule/:courseId`: Update watched module status.
+- **POST** `/api/user/watchedmodule/:courseId`: Update watched module status for the user.
 - **GET** `/api/user/progress`: Get progress for the enrolled courses.
+
+### Instructor Onboarding
+
+- **POST** `/api/instructor/onboard`: Admins onboard instructors to the LMS (Admin only).
 
 ## Setup
 
@@ -54,6 +59,7 @@ This is the backend for a Learning Management System (LMS), where instructors ca
 - Node.js v14.x or higher
 - MongoDB instance (locally or cloud-based)
 - Cloudinary account (for media uploads)
+
 
 ### Installation
 

@@ -5,7 +5,7 @@
     "title": "User and Progress Tracking API",
     "description": "API for user authentication, course enrollment, progress tracking, and watched module updates."
   },
-  "tag": ["User"],
+  "tags": ["User"],
   "host": "localhost:8000",
   "schemes": ["http"],
   "paths": {
@@ -15,25 +15,13 @@
         "description": "Registers a new user.",
         "parameters": [
           {
-            "name": "name",
+            "name": "user",
             "in": "body",
-            "description": "User's name",
+            "description": "User details for registration",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "email",
-            "in": "body",
-            "description": "User's email",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "body",
-            "description": "User's password",
-            "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/User"
+            }
           }
         ],
         "responses": {
@@ -52,18 +40,13 @@
         "description": "Authenticates a user and returns a JWT token.",
         "parameters": [
           {
-            "name": "email",
+            "name": "credentials",
             "in": "body",
-            "description": "User's email",
+            "description": "User credentials for login",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "password",
-            "in": "body",
-            "description": "User's password",
-            "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/LoginCredentials"
+            }
           }
         ],
         "responses": {
@@ -93,7 +76,9 @@
             "in": "body",
             "description": "ID of the module the user has watched",
             "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/Module"
+            }
           }
         ],
         "responses": {
@@ -131,7 +116,8 @@
                     "type": "integer"
                   },
                   "progressPercentage": {
-                    "type": "string"
+                    "type": "number",
+                    "format": "float"
                   }
                 }
               }
@@ -153,7 +139,9 @@
             "in": "body",
             "description": "Refresh token to generate a new access token",
             "required": true,
-            "type": "string"
+            "schema": {
+              "$ref": "#/definitions/RefreshToken"
+            }
           }
         ],
         "responses": {
@@ -193,10 +181,29 @@
         }
       }
     },
+    "LoginCredentials": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      }
+    },
     "Module": {
       "type": "object",
       "properties": {
         "moduleId": {
+          "type": "string"
+        }
+      }
+    },
+    "RefreshToken": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
           "type": "string"
         }
       }

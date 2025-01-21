@@ -1,16 +1,16 @@
 // module.schema.ts
 import mongoose, { Schema, Document } from 'mongoose';
-import { ModuleDTO } from './modules.dto'; // Import DTO to maintain consistency
+import { ModuleDTO } from './modules.dto'; 
 
 const moduleSchema: Schema = new Schema(
   {
-    title: { type: String, required: true },                     // Module title
-    description: { type: String, required: true },               // Module description
-    contentText: { type: String, required: true },               // Text content of the module
-    videoUrl: { type: String, required: true },                  // URL for the uploaded video
-    courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true }, // Reference to the Course model
+    title: { type: String, required: true },                  
+    description: { type: String, required: true },             
+    contentText: { type: String, required: true },               
+    videoUrl: { type: String, required: true },                  
+    courseId: { type: Schema.Types.ObjectId, ref: 'Course', required: true },
   },
-  { timestamps: true } // Automatically adds createdAt and updatedAt fields
+  { timestamps: true } 
 );
 
 const Module = mongoose.model<ModuleDTO & Document>('Module', moduleSchema);

@@ -9,16 +9,19 @@ import * as controller from './user.controller';
 
 const router = express.Router();
 
-// POST /api/user/signup
+
 router.post('/signup', validation.userSignupValidation, validateRequest, controller.signupController);
 
-// POST /api/user/login
+
 router.post('/login', validation.userLoginValidation, validateRequest, controller.loginController);
-// REquest to update the watched modules
+
+// Request to update the watched modules
 router.post('/watchedmodule/:courseId', validation.validateUpdateWatchedModules, validateRequest, controller.updateWatchedModules);
 
+// Route to get the user progress
 router.get('/progress', controller.getUserProgress);
-// Route to refresh the token
+
+// To refresh the tokens with the refresh-token
 router.post('/refresh-token', validation.validateRefreshToken, controller.refreshToken as unknown as RequestHandler);
 
 

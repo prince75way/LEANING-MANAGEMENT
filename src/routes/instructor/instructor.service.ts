@@ -1,35 +1,38 @@
 import { InstructorDTO } from './instructor.dto';
 import { Instructor } from './instructor.schema';
-import { generateTokens } from '../../utils/tokenHelper';  // Import the token helper
+import { generateTokens } from '../../utils/tokenHelper';
 
+/**
+ * Onboards a new instructor by checking if the instructor exists,
+ * creating a new instructor, generating access and refresh tokens,
+ * and saving the instructor with tokens.
+ * 
+ * @param {InstructorDTO} instructorData - The data to create a new instructor.
+ * @returns {Promise<Object>} - The onboarded instructor details along with generated tokens.
+ * @throws {Error} - If the instructor already exists.
+ */
 export const onboardInstructorService = async (instructorData: InstructorDTO) => {
-  // Check if the instructor already exists
   const existingInstructor = await Instructor.findOne({ email: instructorData.email });
   if (existingInstructor) {
     throw new Error('Instructor with this email already exists');
   }
 
-  // Create a new instructor instance
   const newInstructor = new Instructor({
     name: instructorData.name,
     email: instructorData.email,
-    password: instructorData.password, // Password will be hashed by pre-save hook
+    password: instructorData.password,
     role: 'instructor',
     qualifications: instructorData.qualifications,
     experience: instructorData.experience,
   });
 
-  // Save the instructor to the database
   await newInstructor.save();
 
-  // Generate access and refresh tokens
-  const tokens = generateTokens((newInstructor._id as unknown as string).toString()); // Use the new instructor's ID for token generation
+  const tokens = generateTokens((newInstructor._id as unknown as string).toString());
 
-  // You can store the tokens in the instructor document if required, or return them
   newInstructor.accessToken = tokens.accessToken;
   newInstructor.refreshToken = tokens.refreshToken;
 
-  // Save the updated instructor with tokens
   await newInstructor.save();
 
   return {
