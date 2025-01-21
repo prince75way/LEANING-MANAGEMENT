@@ -34,8 +34,8 @@ This is the backend for a Learning Management System (LMS), where instructors ca
 - **GET** `/api/course`: Get the Courses (Instructor only).
 - **POST** `/api/course`: Create a new course (Instructor only).
 - **POST** `/api/course/enroll`: Enroll a student in a course.
-- **PUT** `/api/course/edit/:courseId`: Edit course details (Instructor only).
-- **DELETE** `/api/course/delete/:courseId`: Delete a course (Instructor only).
+- **PUT** `/api/course/:courseId`: Edit course details (Instructor only).
+- **DELETE** `/api/course/:courseId`: Delete a course (Instructor only).
 
 ### Modules
 
