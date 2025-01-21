@@ -93,4 +93,3 @@ http://localhost:8000/api-docs
 
 
 To test the API, you can use tools like Postman or Insomnia. Ensure that you follow the API documentation for testing the different routes.
-
