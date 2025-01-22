@@ -1,9 +1,9 @@
 import swaggerUi from 'swagger-ui-express';
 import { Express } from 'express';
-import courseswagger from './routes/courses/course.swagger.json';
+import courseswagger from './routes/course/course.swagger.json';
 import userswagger from './routes/user/user.swagger.json';
 import instructorswagger from './routes/instructor/instructor.swagger.json';
-import modulesswagger from './routes/modules/module.swagger.json'; 
+import modulesswagger from './routes/module/module.swagger.json'; 
 export const setupSwagger = (app: Express): void => {
   // Manually add tags to each operation
   const addTags = (swaggerFile: any, tag: string) => {

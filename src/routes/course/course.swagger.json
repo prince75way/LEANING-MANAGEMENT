@@ -1,0 +1,243 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Course API",
+      "description": "APIs for creating and enrolling in courses."
+    },
+    "tags": [
+      {
+        "name": "Course",
+        "description": "Course related operations"
+      }
+    ],
+    "host": "localhost:8000",
+    "schemes": ["http"],
+    "paths": {
+      "/course": {
+        "get": {
+          "summary": "Get all courses",
+          "description": "This endpoint retrieves all available courses.",
+          "responses": {
+            "200": {
+              "description": "A list of courses",
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/Course"
+                }
+              }
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "post": {
+          "summary": "Create a new course",
+          "description": "This endpoint allows the creation of a new course. The course requires a title, description, price, and associated instructor.",
+          "parameters": [
+            {
+              "name": "course",
+              "in": "body",
+              "description": "Course details for creating a new course",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Course"
+              }
+            }
+          ],
+          "responses": {
+            "201": {
+              "description": "Course created successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "course": {
+                    "$ref": "#/definitions/Course"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request, missing required fields or invalid data"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/course/enroll": {
+        "post": {
+          "summary": "Enroll in a course",
+          "description": "This endpoint allows a user to enroll in an existing course by providing the course ID and user ID.",
+          "parameters": [
+            {
+              "name": "userId",
+              "in": "formData",
+              "description": "User ID of the person enrolling in the course",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "courseId",
+              "in": "formData",
+              "description": "Course ID of the course the user wants to enroll in",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User successfully enrolled in the course",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "enrollmentDetails": {
+                    "$ref": "#/definitions/Enrollment"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request, missing required fields or invalid data"
+            },
+            "404": {
+              "description": "Course or User not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      },
+      "/course/{courseId}": {
+        "put": {
+          "summary": "Edit an existing course",
+          "description": "This endpoint allows an instructor to edit an existing course by providing the course ID and updated course details.",
+          "parameters": [
+            {
+              "name": "courseId",
+              "in": "path",
+              "description": "ID of the course to edit",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "course",
+              "in": "body",
+              "description": "Updated course details",
+              "required": true,
+              "schema": {
+                "$ref": "#/definitions/Course"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Course updated successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "course": {
+                    "$ref": "#/definitions/Course"
+                  }
+                }
+              }
+            },
+            "400": {
+              "description": "Bad request, missing required fields or invalid data"
+            },
+            "404": {
+              "description": "Course not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete a course",
+          "description": "This endpoint allows an instructor to delete an existing course by providing the course ID.",
+          "parameters": [
+            {
+              "name": "courseId",
+              "in": "path",
+              "description": "ID of the course to delete",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Course deleted successfully",
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {
+                    "type": "string"
+                  },
+                  "courseId": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "Course not found"
+            },
+            "500": {
+              "description": "Internal server error"
+            }
+          }
+        }
+      }
+    },
+    "definitions": {
+      "Course": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "instructorId": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          }
+        },
+        "required": ["title", "description", "price", "instructorId"]
+      },
+      "Enrollment": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string"
+          },
+          "courseId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }

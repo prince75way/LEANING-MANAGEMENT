@@ -7,7 +7,7 @@ export const validateRequest = (req: Request, res: Response, next: NextFunction)
   if (!errors.isEmpty()) {
     sendResponse(res, 400, false, 'Validation failed', {
       errors: errors.array().map((error: any) => ({
-        field: error.param || error.path,  // Handle both cases for safety
+        field: error.param || error.path,  
         message: error.msg,
       })),
     });

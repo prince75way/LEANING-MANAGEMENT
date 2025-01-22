@@ -1,23 +1,17 @@
+import { AppDataSource } from './databasetypeorm'; 
 
-import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config();
 
-export const connectToMongo = async (): Promise<boolean> => {
+export const connectToPostgres = async (): Promise<boolean> => {
   return await new Promise((resolve, reject) => {
-    const mongodbUri = process.env.MONGODB_URI ||"";
 
-    if (mongodbUri === "") throw new Error("mongod db uri not found!");
-    // mongoose.set("debug", true);
-    mongoose.set("strictQuery", false);
-    mongoose
-      .connect(mongodbUri)
+    AppDataSource.initialize()
       .then(() => {
-        console.log("DB Connected!");
+        console.log("PostgreSQL connected successfully!");
         resolve(true);
       })
-      .catch(()=>{
-        console.log("Cannot connect to the mongodb")
+      .catch((error) => {
+        console.error("Error connecting to PostgreSQL:", error);
+        reject(false); 
       });
   });
 };

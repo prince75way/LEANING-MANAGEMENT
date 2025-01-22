@@ -1,12 +1,28 @@
-import mongoose, { Document } from 'mongoose';
-import { BaseSchema } from '../../common/dto/base.dto';
 
-export interface UserDTO extends BaseSchema {
+import { CourseProgress } from './courseprogressentity';
+
+
+
+export interface UserDTO {
+
+  id: string;
+
   name: string;
+
   email: string;
+
+  role: string;
+
   password: string;
-  role: 'student';
-  accessToken?: string | null;
-  refreshToken?: string | null;
-  comparePassword(candidatePassword: string): Promise<boolean>;
+
+  accessToken: string | null;
+
+  refreshToken: string | null;
+
+  courseProgress: CourseProgress[];
+
+  createdAt: string;
+
+  updatedAt: string;
+
 }

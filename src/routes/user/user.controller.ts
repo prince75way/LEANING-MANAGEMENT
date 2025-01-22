@@ -102,4 +102,3 @@ export const refreshToken = asyncHandler(async (req: Request, res: Response): Pr
   const newAccessToken = await refreshAccessToken(refreshToken);
   sendResponse(res, 200, true, 'Access token refreshed successfully', { accessToken: newAccessToken });
 });
-

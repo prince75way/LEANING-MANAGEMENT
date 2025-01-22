@@ -1,13 +1,13 @@
-import { BaseSchema } from "../../common/dto/base.dto";
-
-export interface InstructorDTO extends BaseSchema{
+export interface InstructorDTO {
+    id: string;
     name: string;
     email: string;
-    password: string;
-    role: 'instructor';
+    password:string;
     qualifications: string[];
     experience: string;
-    accessToken?: string | null;
-    refreshToken?: string | null;
+    accessToken: string | null;
+    refreshToken: string | null;
+    createdAt: string;
+    updatedAt: string;
   }
   
